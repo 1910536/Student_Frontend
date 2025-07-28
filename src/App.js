@@ -16,38 +16,42 @@ function App() {
     setStudent({ ...student, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (student.password !== student.confirmPassword) {
-      alert("Passwords do not match.");
-      return;
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  if (student.password !== student.confirmPassword) {
+    alert("Passwords do not match.");
+    return;
+  }
+  try {
+    const payload = {
+      name: student.name,
+      email: student.email,
+      password: student.password,
+      mobile: student.mobile,
+      course: student.course,
+    };
+
+    const API_BASE_URL = "https://studentbackend-production-461a.up.railway.app/"; // ✅ REPLACE this with your real backend URL
+
+    await axios.post(`${API_BASE_URL}/api/register`, payload);
+    alert("Student Registered!");
+    setStudent({
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      mobile: "",
+      course: "",
+    });
+  } catch (error) {
+    if (error.response?.data?.error) {
+      alert("Registration failed: " + error.response.data.error);
+    } else {
+      alert("Registration failed. Please try again.\n" + (error.message || ""));
     }
-    try {
-      const payload = {
-        name: student.name,
-        email: student.email,
-        password: student.password,
-        mobile: student.mobile,
-        course: student.course,
-      };
-      await axios.post("http://localhost:5000/api/register", payload);
-      alert("Student Registered!");
-      setStudent({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-        mobile: "",
-        course: "",
-      });
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.error) {
-        alert("Registration failed: " + error.response.data.error);
-      } else {
-        alert("Registration failed. Please try again.\n" + (error.message || ""));
-      }
-    }
-  };
+  }
+};
+
 
   // Inline styles for modern look
   const styles = {
